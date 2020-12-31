@@ -1,0 +1,4 @@
+[MN]
+192.168.43.47 ansible_ssh_user=root ansible_ssh_pass=redhat
+[CN]
+192.168.43.233 ansible_ssh_user=root ansible_ssh_pass=redhat
