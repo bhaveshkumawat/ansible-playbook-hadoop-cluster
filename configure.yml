@@ -1,0 +1,60 @@
+- hosts: MN , CN
+  tasks:
+          - name: Copying jdk
+            copy:
+                    src: "/root/Downloads/jdk-8u171-linux-x64.rpm"
+                    dest: "/root"
+          - name: copying hadoop
+            copy:
+                    src: "/root/Downloads/hadoop-1.2.1-1.x86_64.rpm"
+                    dest: "/root"
+          - name: Installing jdk
+            shell: "rpm -i jdk-8u171-linux-x64.rpm"
+            ignore_errors: yes
+          - name: Instaling hadoop
+            shell: "rpm -i hadoop-1.2.1-1.x86_64.rpm --force"
+            ignore_errors: yes
+
+- hosts: CN
+  vars:
+          - dir_nn : "/name"
+          - ip: "192.168.43.233"
+  tasks:
+          - name: creating directory for namenode
+            file:
+                    path: "{{ dir_nn }}"
+                    state: directory
+          - name: Configuring hdfs-site.xml file for namenode
+            template:
+                    src: "/root/hadoop/name/hdfs-site.xml"
+                    dest: "/etc/hadoop/hdfs-site.xml"
+          - name: Configuring core-site.xml file for namenode
+            template:
+                    src: "/root/hadoop/name/core-site.xml"
+                    dest: "/etc/hadoop/core-site.xml"
+          - name: formatting namenode directory
+            shell: "echo Y | hadoop namenode -format"
+          - name: starting services of namenode
+            shell: "hadoop-daemon.sh start namenode"
+
+- hosts: MN
+  vars:
+          - dir : "/data"
+          - ip: "192.168.43.233"
+  tasks:
+          - name: creating directory for datanode
+            file: 
+                    path: "{{ dir }}"
+                    state: directory
+          - name: Configuring hdfs-site.xml file for datanode
+            template: 
+                    src: "/root/hadoop/slave/hdfs-site.xml"
+                    dest: "/etc/hadoop/hdfs-site.xml"
+          - name: Configuring core-site.xml file for datanode
+            template:
+                    src: "/root/hadoop/slave/core-site.xml"
+                    dest: "/etc/hadoop/core-site.xml"
+          - name: starting services of datanode
+            shell : "hadoop-daemon.sh start datanode"
+
+                     
